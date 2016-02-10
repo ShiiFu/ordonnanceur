@@ -14,6 +14,15 @@ struct program_desc programs[] = {
 	{"xterm", {"toto.c", NULL}},
 };
 
+struct process_entry
+{
+	pid_t pid; 			/* PID du processus*/
+	struct timeval time_sched; 	/* Temps passé dans l'ordonnanceur*/
+	struct timeval time_exec; 	/* Temps total alloué sur le processeur*/
+	char *file;			/* nom de l'exécutable du preocessus */
+	int exit_status;		/* Code d'erreur retourné par le processus */
+}
+
 static pid_t process_create(struct program_desc program);
 
 int main (int argc, char **argv)
