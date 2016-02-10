@@ -25,6 +25,7 @@ struct process_entry
 
 static pid_t process_create(struct program_desc program);
 static void process_add(pid_t pid, char* file);
+static int process_exited(struct process_entry *entry);
 
 struct process_entry liste[10];
 int listeSize = 0;
@@ -33,6 +34,11 @@ int main (int argc, char **argv)
 {
 	printf("Ordonnanceur\n");
 	process_create(programs[0]);
+	int retour = process_exited(&liste[0]);
+	printf("%d\n", retour);
+	sleep(5);
+	retour = process_exited(&liste[0]);
+	printf("%d\n", retour);
 	
 	return 0;
 }
@@ -66,4 +72,13 @@ static void process_add(pid_t pid, char* file)
 	struct process_entry p = {pid, *file};
 	liste[listeSize] = p;
 	listeSize++;
+}
+
+static int process_exited(struct process_entry *entry)
+{
+	int statut;
+	waitpid(entry->pid, &statut, WNOHANG);
+	if (statut < 1)
+		entry.exit_status = statut;
+	return statut;
 }
