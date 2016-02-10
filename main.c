@@ -21,9 +21,13 @@ struct process_entry
 	struct timeval time_exec; 	/* Temps total alloué sur le processeur*/
 	char *file;			/* nom de l'exécutable du preocessus */
 	int exit_status;		/* Code d'erreur retourné par le processus */
-}
+};
 
 static pid_t process_create(struct program_desc program);
+static void process_add(pid_t pid, char* file);
+
+struct process_entry liste[10];
+int listeSize = 0;
 
 int main (int argc, char **argv)
 {
@@ -52,7 +56,14 @@ static pid_t process_create(struct program_desc program)
 
 		/* Si on est dans le père */
 		default:
-			
+			process_add(pid, program.file);
 			break;
     }
+}
+
+static void process_add(pid_t pid, char* file)
+{
+	struct process_entry p = {pid, *file};
+	liste[listeSize] = p;
+	listeSize++;
 }
