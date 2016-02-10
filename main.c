@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#define NB_PROC 10
+
 struct program_desc
 {
 	char *file;
@@ -25,6 +27,7 @@ struct process_entry
 
 static pid_t process_create(struct program_desc program);
 static void process_add(pid_t pid, char* file);
+static void process_remove(struct process_entry *entry);
 static int process_exited(struct process_entry *entry);
 
 struct process_entry liste[10];
@@ -67,6 +70,7 @@ static pid_t process_create(struct program_desc program)
     }
 }
 
+
 static void process_add(pid_t pid, char* file)
 {
 	struct process_entry p = {pid, *file};
@@ -74,11 +78,24 @@ static void process_add(pid_t pid, char* file)
 	listeSize++;
 }
 
+
+static void process_remove(struct process_entry *entry)
+{
+	int i;
+	for(i=0 ; i < NB_PROC-1 ; i++)
+	{
+		entry[i] = entry[i+1];
+	}
+	struct process_entry empty;
+	entry[NB_PROC-1] = empty;
+}
+
+
 static int process_exited(struct process_entry *entry)
 {
 	int statut;
 	waitpid(entry->pid, &statut, WNOHANG);
 	if (statut < 1)
-		entry.exit_status = statut;
+		entry->exit_status = statut;
 	return statut;
 }
