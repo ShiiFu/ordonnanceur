@@ -29,6 +29,7 @@ static pid_t process_create(struct program_desc program);
 static void process_add(pid_t pid, char* file);
 static void process_remove(struct process_entry *entry);
 static int process_exited(struct process_entry *entry);
+static void scheduler_run(void);
 
 struct process_entry liste[10];
 int listeSize = 0;
@@ -37,12 +38,8 @@ int main (int argc, char **argv)
 {
 	printf("Ordonnanceur\n");
 	process_create(programs[0]);
-	int retour = process_exited(&liste[0]);
-	printf("%d\n", retour);
-	sleep(5);
-	retour = process_exited(&liste[0]);
-	printf("%d\n", retour);
-	
+	process_create(programs[1]);
+	scheduler_run();
 	return 0;
 }
 
@@ -88,14 +85,31 @@ static void process_remove(struct process_entry *entry)
 	}
 	struct process_entry empty;
 	entry[NB_PROC-1] = empty;
+	listeSize--;
 }
 
 
 static int process_exited(struct process_entry *entry)
 {
-	int statut;
+	int statut = 1;
 	waitpid(entry->pid, &statut, WNOHANG);
-	if (statut < 1)
-		entry->exit_status = statut;
+	entry->exit_status = statut;
 	return statut;
+}
+
+static void scheduler_run(void)
+{
+	int continuer = 1;
+	int i;
+	while (continuer == 1)
+	{
+		for(i=0 ; i <= listeSize ; i++)
+		{
+			int retour = process_exited(&liste[i]);
+			if (retour == 0)
+				process_remove(&liste[i]);
+		}
+		if (listeSize == 0)
+			continuer = 0;
+	}
 }
