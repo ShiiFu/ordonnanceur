@@ -1,7 +1,14 @@
-# ordonnanceur
+# Ordonnanceur
 
 GOODWIN Jean-Paul  
 LEROY Damien
+
+## How to use
+
+Aucune dépendance, compilation classique :  
+_gcc main.c -o ordonnanceur_
+
+## About
 
 Toutes les fonctionnalités jusqu'au scheduler_run ont été implémentées. Cela permet d'ajouter, créer et gérer différents processus.
 
