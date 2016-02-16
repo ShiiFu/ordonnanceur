@@ -2,20 +2,28 @@
 #include <stdio.h>
 #include <unistd.h>
 
+
+// Nombre de processus maximum à gérer
 #define NB_PROC 10
 
+
+// Structure permettant de définir un programme avec des arguments d'exécution
 struct program_desc
 {
 	char *file;
 	char *args[5];
 };
 
+
+// Tableau de la structure enregistrant 3 programmes
 struct program_desc programs[] = {
 	{"firefox", {"http://google.fr", NULL}},
 	{"gedit", {NULL}},
 	{"xterm", {"toto.c", NULL}},
 };
 
+
+// Structure qui décrit un processus
 struct process_entry
 {
 	pid_t pid; 			/* PID du processus*/
@@ -25,15 +33,21 @@ struct process_entry
 	int exit_status;		/* Code d'erreur retourné par le processus */
 };
 
+
+// Prototypes des fonctions
 static pid_t process_create(struct program_desc program);
 static void process_add(pid_t pid, char* file);
 static void process_remove(struct process_entry *entry);
 static int process_exited(struct process_entry *entry);
 static void scheduler_run(void);
 
+
+// Variables globales
 struct process_entry liste[10];
 int listeSize = 0;
 
+
+// Fonction main
 int main (int argc, char **argv)
 {
 	printf("Ordonnanceur\n");
@@ -43,6 +57,8 @@ int main (int argc, char **argv)
 	return 0;
 }
 
+
+// Exécute l'un programme en tant que processus fils et l'ajoute à la liste des processus
 static pid_t process_create(struct program_desc program)
 {
 	pid_t pid = fork();
@@ -68,6 +84,7 @@ static pid_t process_create(struct program_desc program)
 }
 
 
+// Ajoute un processus à la liste
 static void process_add(pid_t pid, char* file)
 {
 	struct process_entry p = {pid, *file};
@@ -76,6 +93,7 @@ static void process_add(pid_t pid, char* file)
 }
 
 
+// Retire un processus de la liste
 static void process_remove(struct process_entry *entry)
 {
 	int i;
@@ -89,6 +107,7 @@ static void process_remove(struct process_entry *entry)
 }
 
 
+// Retourne l'état du processus : en exécution ou terminé
 static int process_exited(struct process_entry *entry)
 {
 	int statut = 1;
@@ -97,6 +116,8 @@ static int process_exited(struct process_entry *entry)
 	return statut;
 }
 
+
+// Matérialise le code de l'ordonnanceur
 static void scheduler_run(void)
 {
 	int continuer = 1;
